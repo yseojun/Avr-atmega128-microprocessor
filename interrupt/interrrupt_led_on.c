@@ -27,9 +27,6 @@ int main(void)
 	DDRE = 0x00;
 	PORTG = 0x00;
 	DDRG = 0x03;
-	while (1)
-	{
-		
-	}
+	while (1);
 	return (0);
 }
