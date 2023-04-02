@@ -11,14 +11,16 @@ void	init_devices(void)
 	sei();
 }
 
+volatile char	cnt_bit = 0;
+
 ISR(INT6_vect)
 {
-	PORTG = 1 << PG0;
+	cnt_bit++;
 }
 
 ISR(INT7_vect)
 {
-	PORTG = 1 << PG1;
+	cnt_bit--;
 }
 
 int main(void)
@@ -27,6 +29,8 @@ int main(void)
 	DDRE = 0x00;
 	PORTG = 0x00;
 	DDRG = 0x03;
-	while (1);
+	int	led[4] = {0x00, 0x01, 0x02, 0x03};
+	while (1)
+		PORTG = led[cnt_bit];
 	return (0);
 }

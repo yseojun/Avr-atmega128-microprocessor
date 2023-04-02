@@ -1,6 +1,8 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
+volatile char	start = 0;
+
 void	init_devices(void)
 {
 	cli();
@@ -17,7 +19,12 @@ void	init_devices(void)
 
 ISR(INT7_vect)
 {
-	count = 1;
+	start--;
+}
+
+ISR(INT6_vect)
+{
+	start++;
 }
 
 int main(void)
@@ -29,11 +36,11 @@ int main(void)
 	int	LED_cnt = 0;
 	while (1)
 	{
-		if (PING && (1 << PG3)) start = 1;
-		while (start)
-		{
-
-		}
-		if (LED_cnt > 15) LED_cnt = 0;
+		if (start == 10) start = 0;
+		PORTA = SEG_CODE(start);
+		PORTC = DISP_SEL(1);
+		_delay_ms(500);
+		PORTC = DISP_SEL(0);
 	}
+	return 0;
 }
