@@ -31,6 +31,10 @@ int main(void)
 {
 	init_devices();
 	DDRE = 0x00;
+	PORTA = 0x00;
+	DDRA = 0xFF;
+	PORTC = 0x0F;
+	DDRC = 0x0F;
 	PORTG = 0x00;
 	DDRG = 0x03;
 	while (1)
