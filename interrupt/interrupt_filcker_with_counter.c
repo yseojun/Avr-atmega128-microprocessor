@@ -46,10 +46,10 @@ int main(void)
 			num10 = count / 10;
 			PORTA = SEG_CODE(num1);
 			PORTC = DISP_SEL(1);
-			_delay_ms(100);
+			_delay_ms(10);
 			PORTA = SEG_CODE(num10);
 			PORTC = DISP_SEL(2);
-			_delay_ms(500);
+			_delay_ms(100);
 			start = 0;
 		}
 		PORTG = 0x03;
