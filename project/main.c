@@ -16,6 +16,7 @@ volatile unsigned char player[11];
 volatile unsigned char map[23][11];
 volatile unsigned int score;
 volatile unsigned int player_pos;
+volatile unsigned int stop;
 
 void	init_all()
 {
@@ -50,10 +51,17 @@ ISR(TIMER0_OVF_vect)
 	cnt++;
 	if (cnt == 100)
 	{
-		// PORTG ^= 1 << PG0;
 		cnt = 0;
 		timer++;
 	}
+}
+
+ISR(INT4_vect)
+{
+	if (stop)
+		stop = 0;
+	else
+		stop = 1;
 }
 
 ISR(INT5_vect)
@@ -109,9 +117,14 @@ int main(void)
 	for(int i = 0; i < 23; i++)
 		map[i++] = "         \n";
 	init_all();
+	stop = 0;
+	score = 0;
+	player_pos = 5;
 	while (1)
 	{
-		if (game_over)
+		if (stop == 1)
+			continue ;
+		if (game_over == 1)
 		{
 			tx_string("GAME OVER\n");
 			tx_string("GAME OVER\n");
@@ -122,17 +135,18 @@ int main(void)
 			tx_string("\n");
 			_delay_ms(1000);
 			game_over = 0;
+			player = = "    O    \n";
+			for (int i = 0; i < 23; i++)
+				map[i++] = "         \n";
+			score = 0;
 		}
-		score = 0;
-		player_pos = 5;
-		// seg_disp(timer);
-		if (!game_over)
+		else
 		{
 			int x_pos = rand() % 10;
 			if (map[0][x_pos] != 'x')
 				map[0][x_pos] = 'x';
 			for(int i = 0; i < 23; i++)
-				tx_string(map[n++]);
+				tx_string(map[i++]);
 			tx_string(player);
 			for (int i = 0; i < 23; i++)
 			{
@@ -142,9 +156,11 @@ int main(void)
 					{
 						if (i == 22)
 							game_over = 1;
-						map[i][j] = ' ';
-						if (i + 1 < 23)
+						else
+						{
+							map[i][j] = ' ';
 							map[i + 1][j] = 'x';
+						}
 					}
 				}
 			}
