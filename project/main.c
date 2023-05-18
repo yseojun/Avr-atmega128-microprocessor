@@ -6,17 +6,9 @@
 #include <avr/interrupt.h>
 #include <stdlib.h>
 
-void    init_map(char **map);
-void	print_map(char **map);
-
 volatile unsigned int cnt;
 volatile unsigned int timer;
-volatile unsigned char game_over = 1;
-volatile unsigned char player[11];
-volatile unsigned char map[23][11];
-volatile unsigned int score;
-volatile unsigned int player_pos;
-volatile unsigned int stop;
+volatile unsigned int input;
 
 void	init_all()
 {
@@ -58,111 +50,51 @@ ISR(TIMER0_OVF_vect)
 
 ISR(INT4_vect)
 {
-	if (stop)
-		stop = 0;
-	else
-		stop = 1;
+	tx_string("Left\n");
 }
 
 ISR(INT5_vect)
 {
-	for (int i = 0; i < 10; i++)
-	{
-		if (player[i] == 'O')
-		{
-			if (i - 1 >= 0)
-			{
-				player[i] = ' ';
-				player[i - 1] = 'O';
-				player_pos--;
-			}
-			break ;
-		}
-	}
-}
-
-ISR(INT7_vect)
-{
-	for (int i = 0; i < 10; i++)
-	{
-		if (player[i] == 'O')
-		{
-			if (i + 1 < 10)
-			{
-				player[i] = ' ';
-				player[i + 1] = 'O';
-				player_pos++;
-			}
-			break ;
-		}
-	}
+	tx_string("Down\n");
 }
 
 ISR(INT6_vect)
 {
-	for (int n = 22; n >= 0; n--)
+	tx_string("Up\n");
+}
+
+ISR(INT7_vect)
+{
+	tx_string("Right\n");
+}
+
+void	do_level()
+{
+	while (1)
 	{
-		if (map[n][player_pos] == 'x')
-		{
-			map[n][player_pos] = ' ';
-			score++;
-			break ;
-		}
+		tx_string("doing game\n");
+		_delay_ms(1000);
 	}
 }
 
 int main(void)
 {
-	player =  = "    O    \n";
-	for(int i = 0; i < 23; i++)
-		map[i++] = "         \n";
 	init_all();
-	stop = 0;
-	score = 0;
-	player_pos = 5;
+	input = 0;
 	while (1)
 	{
-		if (stop == 1)
-			continue ;
-		if (game_over == 1)
+		if (playing_game == 1)
 		{
-			tx_string("GAME OVER\n");
-			tx_string("GAME OVER\n");
-			tx_string("SCORE : ");
-			tx_string("GAME OVER\n");
-			tx_string("GAME OVER\n");
-			tx_int(score);
-			tx_string("\n");
-			_delay_ms(1000);
-			game_over = 0;
-			player = = "    O    \n";
-			for (int i = 0; i < 23; i++)
-				map[i++] = "         \n";
-			score = 0;
+			do_level();
+			// chk_input();
 		}
 		else
 		{
-			int x_pos = rand() % 10;
-			if (map[0][x_pos] != 'x')
-				map[0][x_pos] = 'x';
-			for(int i = 0; i < 23; i++)
-				tx_string(map[i++]);
-			tx_string(player);
-			for (int i = 0; i < 23; i++)
+			tx_string("Press PG3 to Start!");
+			while (1)
 			{
-				for (int j = 0; j < 10; j++)
-				{
-					if (map[i][j] == 'x')
-					{
-						if (i == 22)
-							game_over = 1;
-						else
-						{
-							map[i][j] = ' ';
-							map[i + 1][j] = 'x';
-						}
-					}
-				}
+				if (PING && PG3)
+					break ;
 			}
 		}
 	}
